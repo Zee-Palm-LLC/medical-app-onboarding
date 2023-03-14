@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "252755775372",
+    "project_id": "future-learn-2dcba",
+    "storage_bucket": "future-learn-2dcba.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:252755775372:android:3b197085c7cdd2216250a9",
+        "android_client_info": {
+          "package_name": "com.example.animation_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "252755775372-p0fsds9hdr6qmoghoavh8qqhgj0fek7q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQKk8n3t5K5x2q3662ERrDdrYhOba5ux4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "252755775372-p0fsds9hdr6qmoghoavh8qqhgj0fek7q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
