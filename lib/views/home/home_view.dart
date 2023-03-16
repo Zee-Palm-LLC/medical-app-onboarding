@@ -1,6 +1,4 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:animation_app/controllers/user_controller.dart';
-import 'package:animation_app/models/category_model.dart';
 import 'package:animation_app/models/user_model.dart';
 import 'package:animation_app/views/home/components/category_card.dart';
 import 'package:animation_app/views/home/components/custom_animated_text.dart';
@@ -10,8 +8,9 @@ import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'all_categories_view.dart';
+import '../../controllers/admin_controller.dart';
 import 'all_course_view.dart';
+import 'category_courses.dart';
 import 'components/custom_icon_button.dart';
 import 'components/search_field.dart';
 import 'components/suggested_courses_card.dart';
@@ -20,6 +19,7 @@ import 'course_detail_page.dart';
 class HomeView extends StatelessWidget {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
   UserController uc = Get.find<UserController>();
+  AdminController ac = Get.put(AdminController());
 
   double _progress1 = 0.2;
   double _progress2 = 0.8;
@@ -54,7 +54,7 @@ class HomeView extends StatelessWidget {
                     fontWeight: FontWeight.w600),
               ),
               Obx(() {
-                UserModel user = uc.user;
+                UserModel user = uc.user!;
                 return CustomAnimatedText(
                   name: user.fullName!,
                 );
@@ -63,7 +63,7 @@ class HomeView extends StatelessWidget {
           ),
           actions: [
             Obx(() {
-              UserModel user = uc.user;
+              UserModel user = uc.user!;
               return user.profilePic != ''
                   ? CircleAvatar(
                       backgroundImage: NetworkImage(user.profilePic!))
@@ -119,7 +119,7 @@ class HomeView extends StatelessWidget {
                     const Spacer(),
                     TextButton(
                       onPressed: () {
-                        Get.to(() => const AllCategoriesView());
+                        // Get.to(() => const AllCategoriesView());
                       },
                       child: const Text(
                         "See All",
@@ -132,15 +132,29 @@ class HomeView extends StatelessWidget {
               const SizedBox(height: 10),
               SizedBox(
                 height: 110,
-                child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.only(left: 24),
-                    itemBuilder: (ctx, index) {
-                      return CategoryCard(category: categoriesList[index]);
-                    },
-                    separatorBuilder: (ctx, index) => const SizedBox(width: 10),
-                    itemCount: categoriesList.length),
+                child: Obx(() {
+                  return ac.categories!.isEmpty
+                      ? Center(
+                          child: Text("No Categories"),
+                        )
+                      : ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          physics: const BouncingScrollPhysics(),
+                          padding: const EdgeInsets.only(left: 24),
+                          itemBuilder: (ctx, index) {
+                            return CategoryCard(
+                              category: ac.categories![index],
+                              onTap: () {
+                                Get.to(() => CategoryCourseView(
+                                      category: ac.categories![index],
+                                    ));
+                              },
+                            );
+                          },
+                          separatorBuilder: (ctx, index) =>
+                              const SizedBox(width: 10),
+                          itemCount: ac.categories?.length ?? 0);
+                }),
               ),
               const SizedBox(height: 20),
               Padding(
@@ -169,7 +183,9 @@ class HomeView extends StatelessWidget {
               ),
               Obx(() {
                 if (uc.courses!.isEmpty) {
-                  return SizedBox();
+                  return Center(
+                    child: Text("No Courses"),
+                  );
                 }
                 return SizedBox(
                   height: 300,
@@ -179,19 +195,18 @@ class HomeView extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 24),
                       itemBuilder: (ctx, index) {
                         return Obx(() {
-                          bool isFavorite = uc.favorites.any(
-                            (favorite) => favorite.id == uc.courses![index].id,
-                          );
-                          print(isFavorite);
+                          final isFavorite = uc.favorites.any((favorite) =>
+                              favorite.id == uc.courses![index].id);
                           return SuggestedCourseCard(
                             courses: uc.courses![index],
                             index: index,
                             onTap: () {
                               Get.to(() => CourseDetailPage(
                                     course: uc.courses![index],
+                                    isBought: false,
                                   ));
                             },
-                            isFavorite: isFavorite ? true : false,
+                            isFavorite: isFavorite,
                             favoriteCallback: (bool isFavorite) async {
                               if (isFavorite) {
                                 await uc.removeFavorite(uc.courses![index]);
@@ -234,71 +249,93 @@ class HomeView extends StatelessWidget {
               ),
               SizedBox(
                 height: 300,
-                child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.only(left: 24),
-                    itemBuilder: (ctx, index) {
-                      return FadeInLeft(
-                        delay: Duration(milliseconds: index * 50),
-                        duration: Duration(milliseconds: (index * 50) + 800),
-                        child: Card(
-                          elevation: 5,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Container(
-                            height: 170,
-                            width: 270,
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
+                child: Obx(() {
+                  return uc.purchased!.isEmpty
+                      ? Center(
+                          child: Text("No Courses"),
+                        )
+                      : ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          physics: const BouncingScrollPhysics(),
+                          padding: const EdgeInsets.only(left: 24),
+                          itemBuilder: (ctx, index) {
+                            return InkWell(
+                              onTap: () {
+                                Get.to(() => CourseDetailPage(
+                                    course: uc.purchased![index].course,
+                                    isBought: true));
+                              },
+                              child: Card(
+                                elevation: 5,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Container(
                                   height: 170,
-                                  width: double.maxFinite,
-                                  alignment: Alignment.topRight,
+                                  width: 270,
+                                  padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: DecorationImage(
-                                          image:
-                                              AssetImage('assets/ui/ux.jpeg'),
-                                          fit: BoxFit.cover)),
-                                  // child: const CustomHeartIcon(),
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        height: 170,
+                                        width: double.maxFinite,
+                                        alignment: Alignment.topRight,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            image: DecorationImage(
+                                                image: NetworkImage(uc
+                                                    .purchased![index]
+                                                    .course
+                                                    .thumbnail),
+                                                fit: BoxFit.cover)),
+                                      ),
+                                      const SizedBox(height: 5),
+                                      Text(uc.purchased![index].course.title,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: GoogleFonts.poppins(
+                                              fontSize: 16,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w600)),
+                                      const SizedBox(height: 10),
+                                      Text("Completed",
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.black,
+                                              fontSize: 10)),
+                                      LinearProgressIndicator(
+                                        value: uc.purchased![index]
+                                                .completedValue /
+                                            uc.purchased![index].totalValue,
+                                        backgroundColor:
+                                            Colors.grey.withOpacity(0.3),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text("Remaining",
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.black,
+                                              fontSize: 10)),
+                                      LinearProgressIndicator(
+                                        value: 1-uc.purchased![index].completedValue /
+                                            uc.purchased![index].totalValue,
+                                        color: Colors.red,
+                                        backgroundColor:
+                                            Colors.grey.withOpacity(0.3),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                const SizedBox(height: 5),
-                                Text('Figma Course',
-                                    style: GoogleFonts.poppins(
-                                        fontSize: 16,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w600)),
-                                const SizedBox(height: 10),
-                                Text("Completed",
-                                    style: GoogleFonts.poppins(
-                                        color: Colors.black, fontSize: 10)),
-                                LinearProgressIndicator(
-                                  value: _progress1,
-                                  backgroundColor: Colors.grey.withOpacity(0.3),
-                                ),
-                                const SizedBox(height: 10),
-                                Text("Remaining",
-                                    style: GoogleFonts.poppins(
-                                        color: Colors.black, fontSize: 10)),
-                                LinearProgressIndicator(
-                                  value: _progress2,
-                                  color: Colors.red,
-                                  backgroundColor: Colors.grey.withOpacity(0.3),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                    separatorBuilder: (ctx, index) => const SizedBox(width: 20),
-                    itemCount: 1),
+                              ),
+                            );
+                          },
+                          separatorBuilder: (ctx, index) =>
+                              const SizedBox(width: 20),
+                          itemCount: uc.purchased?.length ?? 0);
+                }),
               ),
             ],
           ),

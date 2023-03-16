@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../models/category_model.dart';
 import '../../widgets/image_picker_dialog.dart';
 import '../auth/components/custom_textfield.dart';
 import '../intro/components/custom_buttons.dart';
@@ -31,15 +32,14 @@ class _AdminCourseUploadViewState extends State<AdminCourseUploadView> {
   final _objectives = TextEditingController();
   final _price = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  CategoryCourse category = CategoryCourse.design;
+  CategoryModel? selectedCategory = null;
   File? thumbnail;
-
   List<Chapter> chapters = [];
   final _chapterTitleController = TextEditingController();
   final _chapterDescription = TextEditingController();
   File? chapterVideo;
 
-  AdminController ac = Get.find<AdminController>();
+  AdminController ac = Get.put(AdminController());
 
   @override
   Widget build(BuildContext context) {
@@ -113,8 +113,13 @@ class _AdminCourseUploadViewState extends State<AdminCourseUploadView> {
               Text("Category",
                   style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
               MyDropdown(
-                value: category,
-              ),
+                    categories: ac.categories,
+                    selectedCategory: selectedCategory??selectedCategory,
+                    onCategoryChanged: (category) {
+                      selectedCategory = category;
+                      setState(() {});
+                    },
+                  ),
               SizedBox(height: 20),
               Text("Thumbnail",
                   style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
@@ -164,12 +169,15 @@ class _AdminCourseUploadViewState extends State<AdminCourseUploadView> {
                 },
               ),
               SizedBox(height: 20),
-              ListView.builder(
+              ListView.separated(
                   itemCount: chapters.length,
                   shrinkWrap: true,
+                  separatorBuilder: (context, index) => SizedBox(height: 10),
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (ctx, index) {
                     return ChaptersCard(
+                      isBoughtCourse: false,
+                      viewCallback: (){},
                       chapter: chapters[index],
                       removeCallback: () {
                         setState(() {
@@ -236,32 +244,36 @@ class _AdminCourseUploadViewState extends State<AdminCourseUploadView> {
               SizedBox(height: 20),
               PrimaryButton(
                 onTap: () async {
-                  if (_formKey.currentState != null &&
-                      ((_formKey.currentState!.validate() &&
-                              chapters.isNotEmpty) ||
-                          thumbnail != null)) {
-                    ac.addCourse(CourseModel(
-                        id: '',
-                        title: _titleController.text,
-                        description: _description.text,
-                        uploadedBy: '',
-                        uploaderPic: '',
-                        ownerId: '',
-                        category: category,
-                        thumbnail:
-                            await FirebaseStorageServices.uploadToStorage(
-                                file: thumbnail!, folderName: 'Thumbnails'),
-                        price: double.parse(_price.text),
-                        objectives: _objectives.text,
-                        rating: 0.0,
-                        chapters: chapters));
-                  } else if (chapters.isEmpty) {
-                    Get.snackbar('Error', 'You must add atleat one Chapter');
-                  } else if (thumbnail == null) {
-                    Get.snackbar('Error', 'Please add a Thumbnail');
-                  } else {
-                    return;
-                  }
+                    if (_formKey.currentState != null &&
+                        ((_formKey.currentState!.validate() &&
+                                chapters.isNotEmpty) ||
+                            thumbnail != null || selectedCategory!=null)) {
+                      ac.addCourse(CourseModel(
+                          id: '',
+                          title: _titleController.text,
+                          description: _description.text,
+                          uploadedBy: '',
+                          uploaderPic: '',
+                          ownerId: '',
+                           category: selectedCategory!,
+                          thumbnail:
+                              await FirebaseStorageServices.uploadToStorage(
+                                  file: thumbnail!, folderName: 'Thumbnails'),
+                          price: double.parse(_price.text),
+                          objectives: _objectives.text,
+                          rating: 0.0,
+                          chapters: chapters),
+                          selectedCategory!.id
+                          );
+                    } else if (chapters.isEmpty) {
+                      Get.snackbar('Error', 'You must add atleat one Chapter');
+                    } else if (thumbnail == null) {
+                      Get.snackbar('Error', 'Please add a Thumbnail');
+                    } else if(selectedCategory == null){
+                      Get.snackbar('Error', 'Please Select a Category');
+                    }else {
+                      return;
+                    }
                 },
                 text: 'Upload Course',
               ),

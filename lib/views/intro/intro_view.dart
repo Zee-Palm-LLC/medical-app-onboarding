@@ -120,7 +120,7 @@ class _IntroductionPageViewState extends State<IntroductionPageView> {
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: PrimaryButton(
                         onTap: () {
-                          Get.to(() => AuthWrapper());
+                          Get.off(() => AuthWrapper());
                         },
                         text: 'Get Started',
                       ),

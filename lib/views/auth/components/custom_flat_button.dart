@@ -68,7 +68,7 @@ class _CustomFlatButtonState extends State<CustomFlatButton>
               widget.text,
               style: GoogleFonts.poppins(
                   fontSize: 18,
-                  fontWeight: FontWeight.w100,
+                  fontWeight: FontWeight.w500,
                   color: widget.textColor),
             ),
           ),

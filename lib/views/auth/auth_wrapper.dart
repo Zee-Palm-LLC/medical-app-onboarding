@@ -1,3 +1,4 @@
+import 'package:animation_app/views/auth/auth_view.dart';
 import 'package:animation_app/views/auth/login_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,10 +16,13 @@ class AuthWrapper extends StatelessWidget {
         autoRemove: false,
         builder: (ac) {
           if (ac.user == null) {
-            return LoginPageView();
+            return WelcomePageView();
           } else {
-            Get.put(UserController());
-            return LandingPage();
+            return GetBuilder<UserController>(
+                init: UserController(),
+                builder: (uc) {
+                  return LandingPage();
+                });
           }
         });
   }

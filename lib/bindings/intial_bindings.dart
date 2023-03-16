@@ -1,5 +1,3 @@
-
-import 'package:animation_app/controllers/admin_controller.dart';
 import 'package:animation_app/controllers/user_controller.dart';
 import 'package:get/get.dart';
 
@@ -9,7 +7,6 @@ class HomeBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<AuthController>(() => AuthController());
-    Get.lazyPut<UserController>(() => UserController());
-    Get.put(AdminController());
+    Get.lazyPut<UserController>(() => UserController());    
   }
 }

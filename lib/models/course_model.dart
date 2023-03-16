@@ -1,10 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-
 import 'package:algolia/algolia.dart';
 import 'package:animation_app/models/chapter_model.dart';
-
-import '../data/enums/category_enum.dart';
+import 'category_model.dart';
 
 class CourseModel {
   String id;
@@ -13,7 +11,7 @@ class CourseModel {
   String uploadedBy;
   String uploaderPic;
   String ownerId;
-  CategoryCourse category;
+  CategoryModel category;
   String thumbnail;
   double price;
   String objectives;
@@ -34,6 +32,8 @@ class CourseModel {
     required this.chapters,
   });
 
+
+ 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
@@ -42,7 +42,7 @@ class CourseModel {
       'uploadedBy': uploadedBy,
       'uploaderPic': uploaderPic,
       'ownerId': ownerId,
-      'category': category.index,
+      'category': category.toMap(),
       'thumbnail': thumbnail,
       'price': price,
       'objectives': objectives,
@@ -53,23 +53,23 @@ class CourseModel {
 
   factory CourseModel.fromMap(Map<String, dynamic> map) {
     return CourseModel(
-      id: map['id'] as String,
-      title: map['title'] as String,
-      description: map['description'] as String,
-      uploadedBy: map['uploadedBy'] as String,
-      uploaderPic: map['uploaderPic'] as String,
-      ownerId: map['ownerId'] as String,
-      category: CategoryCourse.values[map['category']],
-      thumbnail: map['thumbnail'] as String,
-      price: map['price'] as double,
-      objectives: map['objectives'] as String,
-      rating: map['rating'] as double,
-      chapters: List<Chapter>.from(
-        (map['chapters'] as List<dynamic>).map<Chapter>(
-          (x) => Chapter.fromMap(x as Map<String, dynamic>),
+        id: map['id'] as String,
+        title: map['title'] as String,
+        description: map['description'] as String,
+        uploadedBy: map['uploadedBy'] as String,
+        uploaderPic: map['uploaderPic'] as String,
+        ownerId: map['ownerId'] as String,
+        category: CategoryModel.fromMap(map['category']),
+        thumbnail: map['thumbnail'] as String,
+        price: map['price'] as double,
+        objectives: map['objectives'] as String,
+        rating: map['rating'] as double,
+        chapters: List<Chapter>.from(
+          (map['chapters'] as List<dynamic>).map<Chapter>(
+            (x) => Chapter.fromMap(x as Map<String, dynamic>),
+          ),
         ),
-      ),
-    );
+     );
   }
 
   String toJson() => json.encode(toMap());
@@ -80,20 +80,21 @@ class CourseModel {
   factory CourseModel.fromAlgolia(AlgoliaObjectSnapshot snapshot) {
     final data = snapshot.data;
     return CourseModel(
-      id: data['id'],
-      title: data['title'],
-      description: data['description'],
-      uploadedBy: data['uploadedBy'],
-      uploaderPic: data['uploaderPic'],
-      ownerId: data['ownerId'],
-      category: CategoryCourse.values[data['category']],
-      thumbnail: data['thumbnail'],
-      price: data['price'],
-      objectives: data['objectives'],
-      rating: data['rating'],
-      chapters: List<Chapter>.from(data['chapters'].map(
-        (chapterData) => Chapter.fromMap(chapterData),
-      )),
-    );
+        id: data['id'],
+        title: data['title'],
+        description: data['description'],
+        uploadedBy: data['uploadedBy'],
+        uploaderPic: data['uploaderPic'],
+        ownerId: data['ownerId'],
+        category:
+            CategoryModel.fromMap(data['category'] as Map<String, dynamic>),
+        thumbnail: data['thumbnail'],
+        price: data['price'],
+        objectives: data['objectives'],
+        rating: data['rating'],
+        chapters: List<Chapter>.from(data['chapters'].map(
+          (chapterData) => Chapter.fromMap(chapterData),
+        )),
+        );
   }
 }

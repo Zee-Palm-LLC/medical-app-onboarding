@@ -58,6 +58,8 @@ dependencies:
   fluttertoast: ^8.2.1
   staggered_grid_view_flutter: ^0.0.4
   algolia: ^1.1.2
+  async: ^2.10.0
+  progress_dialog_null_safe: ^1.0.7
 
   
 dev_dependencies:

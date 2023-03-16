@@ -71,30 +71,34 @@ class _VideoScreenState extends State<VideoScreen> {
                     aspectRatio: 16 / 9,
                     child: VideoPlayer(_videoPlayerController),
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white, shape: BoxShape.circle),
-                    child: IconButton(
-                      icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
-                      onPressed: () {
-                        setState(() {
-                          _isPlaying = !_isPlaying;
-                          if (_isPlaying) {
-                            _videoPlayerController.play();
-                            _timer = Timer.periodic(Duration(milliseconds: 500),
-                                (timer) {
-                              setState(() {
-                                _videoPosition = _videoPlayerController
-                                    .value.position.inMilliseconds
-                                    .toDouble();
+                  AnimatedOpacity(
+                    opacity: _isPlaying ? 0 : 1,
+                    duration: Duration(seconds: 2),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white, shape: BoxShape.circle),
+                      child: IconButton(
+                        icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
+                        onPressed: () {
+                          setState(() {
+                            _isPlaying = !_isPlaying;
+                            if (_isPlaying) {
+                              _videoPlayerController.play();
+                              _timer = Timer.periodic(
+                                  Duration(milliseconds: 500), (timer) {
+                                setState(() {
+                                  _videoPosition = _videoPlayerController
+                                      .value.position.inMilliseconds
+                                      .toDouble();
+                                });
                               });
-                            });
-                          } else {
-                            _videoPlayerController.pause();
-                            _timer.cancel();
-                          }
-                        });
-                      },
+                            } else {
+                              _videoPlayerController.pause();
+                              _timer.cancel();
+                            }
+                          });
+                        },
+                      ),
                     ),
                   ),
                 ],
@@ -127,6 +131,21 @@ class _VideoScreenState extends State<VideoScreen> {
                         });
                         _videoPlayerController
                             .seekTo(Duration(milliseconds: value.toInt()));
+                      },
+                      onChangeEnd: (value) {
+                        _videoPlayerController.play();
+                        _timer = Timer.periodic(Duration(milliseconds: 500),
+                            (timer) {
+                          setState(() {
+                            _videoPosition = _videoPlayerController
+                                .value.position.inMilliseconds
+                                .toDouble();
+                          });
+                        });
+                      },
+                      onChangeStart: (value) {
+                        _videoPlayerController.pause();
+                        _timer.cancel();
                       },
                     ),
                   ),

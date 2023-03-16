@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:animation_app/models/category_model.dart';
 
 class CategoryCard extends StatefulWidget {
   final CategoryModel category;
+  final VoidCallback onTap;
   const CategoryCard({
     Key? key,
+    required this.onTap,
     required this.category,
   }) : super(key: key);
 
@@ -45,6 +48,7 @@ class _CategoryCardState extends State<CategoryCard>
             _controller.forward().then((_) {
               _controller.reverse();
             });
+            widget.onTap();
           },
           child: ScaleTransition(
             scale: _tween.animate(
@@ -63,12 +67,12 @@ class _CategoryCardState extends State<CategoryCard>
                 width: 70,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: const BoxDecoration(shape: BoxShape.circle),
-                child: SvgPicture.asset(widget.category.image),
+                child: Image.network(widget.category.image),
               ),
             ),
           )),
       const Spacer(),
-      Text(widget.category.categoryName,
+      Text(widget.category.category,
           style: GoogleFonts.poppins(fontSize: 15, color: Colors.black))
     ]);
   }

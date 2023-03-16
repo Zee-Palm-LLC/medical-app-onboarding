@@ -30,7 +30,7 @@ class LandingPage extends StatelessWidget {
           controller: _drawerController,
           style: DrawerStyle.defaultStyle,
           menuScreen: const SideBar(),
-          mainScreen: uc.user.userType == UserType.student
+          mainScreen: uc.user!.userType == UserType.student
               ? HomeView()
               : AdminHomePage(),
           borderRadius: 24,

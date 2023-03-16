@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:animation_app/controllers/admin_controller.dart';
+import 'package:animation_app/controllers/user_controller.dart';
 import 'package:animation_app/data/enums/user_type.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:animation_app/views/auth/auth_wrapper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
@@ -9,7 +11,6 @@ import '../models/user_model.dart';
 import '../services/database_services.dart';
 import '../views/profile/new_password_view.dart';
 import '../widgets/loading_dialog.dart';
-import 'user_controller.dart';
 
 class AuthController extends GetxController {
   final Rx<User?> _firebaseUser = Rx<User?>(null);
@@ -55,7 +56,7 @@ class AuthController extends GetxController {
                 profilePic: '',
                 userType: userType));
       });
-      Get.close(1);
+      Get.back();
     } on Exception catch (err) {
       hideLoadingDialog();
       Get.snackbar("Error", err.toString());
@@ -105,8 +106,10 @@ class AuthController extends GetxController {
 
   Future<void> signOut() async {
     await _auth.signOut();
-    if (Get.isRegistered<UserController>()) {
+    if(Get.isRegistered<UserController>()){
       Get.delete<UserController>();
-    }
+      Get.delete<AdminController>();
+    };
+  
   }
 }

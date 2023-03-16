@@ -1,8 +1,10 @@
 import 'package:animation_app/controllers/user_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/cart_model.dart';
+import '../../models/purchased_model.dart';
 
 class CartView extends StatelessWidget {
   final UserController uc = Get.find<UserController>();
@@ -11,10 +13,21 @@ class CartView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cart'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Text('Cart',
+            style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.black)),
+        leading: IconButton(
+            onPressed: () {
+              Get.back();
+            },
+            icon: Icon(Icons.arrow_back, color: Colors.black)),
       ),
       body: StreamBuilder<Cart>(
-        stream: uc.userCartStream(uc.user.id!),
+        stream: uc.userCartStream(uc.user!.id!),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
@@ -39,9 +52,33 @@ class CartView extends StatelessWidget {
             itemBuilder: (context, index) {
               final cartItem = cartItems[index];
               return ListTile(
-                title: Text(cartItem.title),
-                subtitle: Text(cartItem.description),
-                trailing: Text('\$${cartItem.price}'),
+                leading: Container(
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      image: DecorationImage(
+                          image: NetworkImage(cartItem.thumbnail),
+                          fit: BoxFit.cover)),
+                ),
+                title: Text(cartItem.title, maxLines: 1),
+                subtitle: Text(
+                  cartItem.description,
+                  maxLines: 2,
+                ),
+                trailing: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25))),
+                    onPressed: () async {
+                      await uc.addToBoughtCollection(PurchasedCourses(
+                          completedValue: 0,
+                          id: '',
+                          totalValue: cartItem.chapters.length.toDouble(),
+                          course: cartItem,
+                          purchaseDate: DateTime.now()));
+                    },
+                    child: Text("Pay")),
               );
             },
           );

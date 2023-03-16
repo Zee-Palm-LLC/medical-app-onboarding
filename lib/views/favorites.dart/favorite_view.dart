@@ -35,7 +35,7 @@ class FavoriteView extends StatelessWidget {
         ),
       ),
       body: StreamBuilder<List<FavoriteItem>>(
-        stream: uc.favoritesStream(uc.user.id!),
+        stream: uc.favoritesStream(uc.user!.id!),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));

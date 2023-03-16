@@ -78,8 +78,10 @@ class _SearchViewState extends State<SearchView> {
                   : ListView.separated(
                       padding: EdgeInsets.symmetric(horizontal: 24),
                       itemBuilder: (context, index) {
+                        
                         CourseModel course =
                             CourseModel.fromAlgolia(_results[index]);
+                            print(_results.length);
                         return ListTile(
                           contentPadding: EdgeInsets.zero,
                           dense: true,
@@ -102,6 +104,7 @@ class _SearchViewState extends State<SearchView> {
                           ),
                           subtitle: Text(
                             course.description,
+                            maxLines: 3,
                             style: GoogleFonts.poppins(
                                 fontSize: 12, fontWeight: FontWeight.w300),
                           ),
@@ -115,14 +118,12 @@ class _SearchViewState extends State<SearchView> {
   }
 
   List<AlgoliaObjectSnapshot> _results = [];
-
   _search() async {
     AlgoliaQuery query = AlgoliaApplication.algolia
         .index('dev-futurelearning')
         .query(_searchController.text)
         .setOffset(0)
         .setHitsPerPage(25);
-
     _results = (await query.getObjects()).hits;
   }
 

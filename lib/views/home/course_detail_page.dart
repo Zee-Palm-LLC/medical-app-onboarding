@@ -1,7 +1,6 @@
 import 'package:animation_app/controllers/user_controller.dart';
 import 'package:animation_app/models/course_model.dart';
 import 'package:animation_app/views/admin/components/chapters_card.dart';
-import 'package:animation_app/views/home/components/small_video_cards.dart';
 import 'package:animation_app/views/home/video_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,14 +10,17 @@ import 'components/main_video_card.dart';
 
 class CourseDetailPage extends StatefulWidget {
   final CourseModel course;
-  const CourseDetailPage({Key? key, required this.course}) : super(key: key);
+  final bool isBought;
+  const CourseDetailPage(
+      {Key? key, required this.course, this.isBought = false})
+      : super(key: key);
 
   @override
   State<CourseDetailPage> createState() => _CourseDetailPageState();
 }
 
 class _CourseDetailPageState extends State<CourseDetailPage> {
-  int selectedIndex = 0;
+  UserController uc = Get.find<UserController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,9 +58,13 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                     fontSize: 18, fontWeight: FontWeight.bold)),
           ),
           ListTile(
-            leading: CircleAvatar(
-              backgroundImage: NetworkImage(widget.course.uploaderPic),
-            ),
+            leading: widget.course.uploaderPic != ''
+                ? CircleAvatar(
+                    backgroundImage: NetworkImage(widget.course.uploaderPic),
+                  )
+                : CircleAvatar(
+                    child: Icon(Icons.person),
+                  ),
             title: Text(widget.course.uploadedBy,
                 style: GoogleFonts.poppins(
                     fontSize: 16, fontWeight: FontWeight.w600)),
@@ -87,9 +93,14 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                       videoUrl: widget.course.chapters[index].videoUrl));
                 },
                 child: ChaptersCard(
-                    chapter: widget.course.chapters[index],
-                    isDetailPage: true,
-                    removeCallback: () {}),
+                  chapter: widget.course.chapters[index],
+                  isDetailPage: true,
+                  isBoughtCourse: widget.isBought,
+                  removeCallback: () {},
+                  viewCallback: () async {
+                    await uc.updateCompletedValue(widget.course.id);
+                  },
+                ),
               );
             },
           ),
@@ -124,29 +135,32 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 style: GoogleFonts.poppins(fontWeight: FontWeight.w300)),
           ),
           SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            child: ElevatedButton(
-                onPressed: () {
-                  Get.find<UserController>().addToCart(widget.course);
-                },
-                style: ElevatedButton.styleFrom(
-                    fixedSize: Size(Get.width, 54),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10))),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Add to Cart',
-                        style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold)),
-                    SizedBox(width: 10),
-                    Icon(Icons.shopping_cart, color: Colors.white)
-                  ],
-                )),
-          ),
+          widget.isBought
+              ? SizedBox()
+              : Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                  child: ElevatedButton(
+                      onPressed: () {
+                        Get.find<UserController>().addToCart(widget.course);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          fixedSize: Size(Get.width, 54),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10))),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Add to Cart',
+                              style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold)),
+                          SizedBox(width: 10),
+                          Icon(Icons.shopping_cart, color: Colors.white)
+                        ],
+                      )),
+                ),
         ]),
       ),
     );

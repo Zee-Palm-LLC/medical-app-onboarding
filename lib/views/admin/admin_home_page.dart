@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/user_model.dart';
 import '../home/components/custom_animated_text.dart';
+import 'add_category.dart';
 import 'upload_course.dart';
 
 class AdminHomePage extends StatelessWidget {
@@ -37,7 +38,7 @@ class AdminHomePage extends StatelessWidget {
                   fontWeight: FontWeight.w600),
             ),
             Obx(() {
-              UserModel user = uc.user;
+              UserModel user = uc.user!;
               return CustomAnimatedText(
                 name: user.fullName ?? '',
               );
@@ -45,15 +46,15 @@ class AdminHomePage extends StatelessWidget {
           ],
         ),
         actions: [
-          // Obx(() {
-          //   UserModel user = uc.user;
-          //   return user.profilePic != ''
-          //       ? CircleAvatar(backgroundImage: NetworkImage(user.profilePic!))
-          //       : CircleAvatar(
-          //           backgroundColor: Colors.grey.withOpacity(0.4),
-          //           child: const Icon(Icons.person),
-          //         );
-          // }),
+          Obx(() {
+            UserModel user = uc.user!;
+            return user.profilePic != ''
+                ? CircleAvatar(backgroundImage: NetworkImage(user.profilePic!))
+                : CircleAvatar(
+                    backgroundColor: Colors.grey.withOpacity(0.4),
+                    child: const Icon(Icons.person),
+                  );
+          }),
           const SizedBox(width: 10)
         ],
       ),
@@ -96,6 +97,34 @@ class AdminHomePage extends StatelessWidget {
                         GoogleFonts.poppins(color: Colors.white, fontSize: 18),
                   ),
                 )),
+              ],
+            ),
+          ),
+          SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              children: [
+                Expanded(
+                    child: GestureDetector(
+                  onTap: () {
+                    Get.to(() => AddCategoryView());
+                  },
+                  child: Container(
+                    height: 150,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.green.withOpacity(0.5)),
+                    child: Text(
+                      "Add Category",
+                      style: GoogleFonts.poppins(
+                          color: Colors.white, fontSize: 18),
+                    ),
+                  ),
+                )),
+                SizedBox(width: 20),
+                Expanded(child: Container()),
               ],
             ),
           )

@@ -11,11 +11,15 @@ class ChaptersCard extends StatelessWidget {
   final Chapter chapter;
   final VoidCallback removeCallback;
   final bool isDetailPage;
+  final bool isBoughtCourse;
+  final VoidCallback viewCallback;
   const ChaptersCard(
       {Key? key,
       required this.chapter,
       required this.removeCallback,
-      this.isDetailPage = false})
+      this.isDetailPage = false,
+      required this.isBoughtCourse,
+      required this.viewCallback})
       : super(key: key);
 
   @override
@@ -38,10 +42,14 @@ class ChaptersCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  chapter.title,
-                  style: GoogleFonts.poppins(
-                      fontSize: 18, fontWeight: FontWeight.w600),
+                Flexible(
+                  child: Text(
+                    chapter.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                        fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
                 ),
                 isDetailPage
                     ? SizedBox()
@@ -60,7 +68,10 @@ class ChaptersCard extends StatelessWidget {
                   fontSize: 14, fontWeight: FontWeight.w300),
             )
           ],
-        ))
+        )),
+        isBoughtCourse
+            ? ElevatedButton(onPressed: viewCallback, child: Text("Viewed"))
+            : SizedBox()
       ],
     );
   }

@@ -61,9 +61,13 @@ class SuggestedCourseCard extends StatelessWidget {
                 const SizedBox(height: 10),
                 Row(
                   children: [
+                    courses.uploaderPic!=""?
                     CircleAvatar(
                       radius: 15,
                       backgroundImage: NetworkImage(courses.uploaderPic),
+                    ):CircleAvatar(
+                      radius: 15,
+                      child: Icon(Icons.person,size: 15,),
                     ),
                     const SizedBox(width: 10),
                     Text(courses.uploadedBy,

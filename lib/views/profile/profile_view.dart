@@ -37,7 +37,7 @@ class ProfileView extends StatelessWidget {
         ),
       ),
       body: Obx(() {
-        UserModel? user = uc.user;
+        UserModel user = uc.user!;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
@@ -71,8 +71,8 @@ class ProfileView extends StatelessWidget {
                   Get.dialog(LogoutDialog(
                     onLogoutCallback: () async {
                       Get.back();
-                      await ac.signOut();
                       Get.back();
+                      await ac.signOut();
                     },
                   ));
                 },

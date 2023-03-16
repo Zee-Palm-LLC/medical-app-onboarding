@@ -118,7 +118,9 @@ class LoginPageView extends StatelessWidget {
                           if (_formKey.currentState!.validate()) {
                             await ac.signInWithEmailAndPassword(
                                 email: _emailController.text.trim(),
-                                password: _passwordController.text.trim());
+                                password: _passwordController.text.trim(),
+                                
+                                );
                           }
                         },
                         text: 'Login',
@@ -161,25 +163,7 @@ class LoginPageView extends StatelessWidget {
                       const SizedBox(height: 20),
                       const CustomSocialButton(),
                       SizedBox(height: Get.height * .055),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            "Don't have an account !",
-                            style: TextStyle(color: Colors.black, fontSize: 14),
-                          ),
-                          TextButton(
-                              onPressed: () {
-                                Get.to(() => SignUpView());
-                              },
-                              child: const Text(
-                                "Register",
-                                style: TextStyle(
-                                    color: MyColors.kPrimaryColor,
-                                    fontSize: 14),
-                              ))
-                        ],
-                      ),
+                    
                     ],
                   ),
                 ),
