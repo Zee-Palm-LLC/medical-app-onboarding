@@ -1,16 +1,11 @@
-# animation_app
+# Zee Palm UI Code
 
-A new Flutter project.
+Medical App Onboarding UI done with Flutter 3.7.0
 
-## Getting Started
+## Details
 
-This project is a starting point for a Flutter application.
+This project includes Medical App UI with onboarding and authentication screens.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<img src="https://user-images.githubusercontent.com/128903428/234695487-1c1d8e15-26d9-4797-86e7-44e21159e354.png" width="200" height="400" />
+<img src="https://user-images.githubusercontent.com/128903428/234695647-49c3069a-487e-4958-811e-cf31cfb04fbd.png" width="200" height="400" />
+<img src="https://user-images.githubusercontent.com/128903428/234695807-49649ff0-17ab-42d0-9dcf-6639c485cf22.png" width="200" height="400" />
